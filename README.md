@@ -10,6 +10,8 @@ This repository contains the cryptography for:
 
 ## Generator point verification for curve
 
+Run the following in Sage math.
+
 ```python
 import hashlib
 import binascii
