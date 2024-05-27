@@ -93,12 +93,12 @@ func BenchmarkVerifyDistributionShares(b *testing.B) {
 	secret, _ := rand.Int(rand.Reader, theCurveN)
 	sharebox, err := dealer.DistributeSecret(secret, pks[1:], threshold)
 	require.NoError(b, err)
-	decShares := make([]*DecryptedShare, 0, n)
+//	decShares := make([]*DecryptedShare, 0, n)
 	for i, d := range dealers[1:] {
 		decShare, err := d.ExtractSecretShare(sharebox)
 		require.NoError(b, err, "ExtractSecretShare", i)
 		require.NotNil(b, decShare, "ExtractSecretShare", i)
-		decShares = append(decShares, decShare)
+//		decShares = append(decShares, decShare)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

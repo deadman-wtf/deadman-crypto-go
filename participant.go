@@ -3,7 +3,6 @@ package crypto
 import (
 	"crypto/ecdsa"
 	"crypto/rand"
-	"errors"
 	"fmt"
 	"math/big"
 
@@ -12,10 +11,6 @@ import (
 
 type Participant struct {
 	PK        *ecdsa.PublicKey
-	position  int
-	share     *Point
-	challenge *big.Int
-	response  *big.Int
 }
 
 type Dealer struct {
@@ -32,7 +27,7 @@ func NewDealer(private *ecdsa.PrivateKey) *Dealer {
 
 func (d *Dealer) DistributeSecret(secret *big.Int, pks []*ecdsa.PublicKey, threshold int) (*DistributionSharesBox, error) {
 	if len(pks) < threshold {
-		return nil, errors.New(fmt.Sprintf("len of public_keys(%d) < threshold(%d). ", len(pks), threshold))
+		return nil, fmt.Errorf("len of public_keys(%d) < threshold(%d). ", len(pks), threshold)
 	}
 
 	// generates a random polynomial of degree t-1
@@ -63,7 +58,7 @@ func (d *Dealer) ExtractSecretShare(sharesBox *DistributionSharesBox) (*Decrypte
 		}
 	}
 	if share == nil {
-		return nil, errors.New("no share for me")
+		return nil, fmt.Errorf("no share for me")
 	}
 	return d.extractSecretShare(share)
 }
@@ -121,7 +116,7 @@ func VerifyDistributionShares(sharesBox *DistributionSharesBox) bool {
 	bigi, bigj, bigij := new(big.Int), new(big.Int), new(big.Int)
 	H := &Point{Hx, Hy}
 
-	Xix, Xiy, Cijx, Cijy := new(big.Int), new(big.Int), new(big.Int), new(big.Int)
+	Xix, Xiy := new(big.Int), new(big.Int)
 	for _, share := range sharesBox.Shares {
 		Xix.Set(Cj[0].X)
 		Xiy.Set(Cj[0].Y)
@@ -129,7 +124,7 @@ func VerifyDistributionShares(sharesBox *DistributionSharesBox) bool {
 			bigi.SetInt64(int64(share.Position))
 			bigj.SetInt64(int64(j))
 			bigij.Exp(bigi, bigj, theCurveN)                                  // i^j mod N
-			Cijx, Cijy = theCurve.ScalarMult(Cj[j].X, Cj[j].Y, bigij.Bytes()) // C_j · i^j
+      Cijx, Cijy := theCurve.ScalarMult(Cj[j].X, Cj[j].Y, bigij.Bytes()) // C_j · i^j
 			Xix, Xiy = theCurve.Add(Xix, Xiy, Cijx, Cijy)
 		}
 		//log.Printf("Verify Xi: %s, %s\n", Xix.Text(16), Xiy.Text(16))
