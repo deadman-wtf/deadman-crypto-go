@@ -1,7 +1,7 @@
 package crypto
 
 import (
-  "crypto/rand"
+	"crypto/rand"
 	"hash"
 	"math/big"
 

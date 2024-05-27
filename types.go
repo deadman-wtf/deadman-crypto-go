@@ -11,7 +11,7 @@ type Point struct {
 }
 
 type DistributionSharesBox struct {
-  Commitments []*Point
+	Commitments []*Point
 	Shares      []*Share
 	U           *big.Int
 }
@@ -38,4 +38,3 @@ type DecryptedShare struct {
 	challenge *big.Int
 	response  *big.Int
 }
-

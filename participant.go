@@ -24,24 +24,24 @@ type Dealer struct {
 }
 
 func NewDealer(private *ecdsa.PrivateKey) *Dealer {
-  return &Dealer{
-    Participant: Participant{PK: &private.PublicKey},
-    privateKey: private,
-  }
+	return &Dealer{
+		Participant: Participant{PK: &private.PublicKey},
+		privateKey:  private,
+	}
 }
 
 func (d *Dealer) DistributeSecret(secret *big.Int, pks []*ecdsa.PublicKey, threshold int) (*DistributionSharesBox, error) {
-  if len(pks) < threshold {
-    return nil, errors.New(fmt.Sprintf("len of public_keys(%d) < threshold(%d). ", len(pks), threshold))
-  }
+	if len(pks) < threshold {
+		return nil, errors.New(fmt.Sprintf("len of public_keys(%d) < threshold(%d). ", len(pks), threshold))
+	}
 
-  // generates a random polynomial of degree t-1
+	// generates a random polynomial of degree t-1
 	poly, err := InitPolynomial(threshold-1, theCurveN)
 	if err != nil {
 		return nil, err
 	}
 
-  // initialize the participant's Position
+	// initialize the participant's Position
 	shares := make([]*Share, len(pks))
 	for i, pk := range pks {
 		shares[i] = &Share{
@@ -128,7 +128,7 @@ func VerifyDistributionShares(sharesBox *DistributionSharesBox) bool {
 		for j := 1; j < len(Cj); j++ {
 			bigi.SetInt64(int64(share.Position))
 			bigj.SetInt64(int64(j))
-			bigij.Exp(bigi, bigj, theCurveN)                                 // i^j mod N
+			bigij.Exp(bigi, bigj, theCurveN)                                  // i^j mod N
 			Cijx, Cijy = theCurve.ScalarMult(Cj[j].X, Cj[j].Y, bigij.Bytes()) // C_j · i^j
 			Xix, Xiy = theCurve.Add(Xix, Xiy, Cijx, Cijy)
 		}
